@@ -32,8 +32,8 @@ loop:
 	add.s	$f6, $f6, $f1	# increment area
 
 	beq		$t1, $t0, print	# end loop
-	move	$t4, $t2		# update x1
-	move	$t5, $t3		# update x2
+	mov.s	$f1, $f3		# update x1
+	mov.s	$f2, $f4		# update x2
 	j		loop			# jump to loop
 
 input:
