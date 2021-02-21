@@ -11,24 +11,24 @@ main:
 	lw		$s7, max		# load the max permitted value of x, y
 	lw		$s6, min		# load the min permitted value of x, y
 
-	jal		input
+	li		$v0, 5			# load_int
+	syscall
+
 	move	$t0, $v0		# n: number of coordinates
+    beq		$t0, 1, nIs1	# handle corner case
 	blt		$t0, 1, nLess1	# handle corner case (n<1)
 
 	li		$t1, 1			# counter of points
 	jal		input
 	move	$t2, $v0		# coordinate of x1
 	jal		input
-	move	$t3, $v0		# coordinate of y1
+	mov.s	$f2, $f0		# coordinate of y1
 
-	beq		$t0, 1, nIs1	# handle corner case
-
-	li		$s0, 0			# the area
-	li		$s5, 2			# load 2
+	l.s		$f6, zero		# the area
 	l.s		$f5, point5		# load 0.5
 
 
-# taking n coordinates as input and calculating area using a loop
+# taking n coordinates as input and calculating are using a loop
 loop:
 	jal		checkBounds		# check the bounds
 	addi	$t1, $t1, 1		# increment the counter
@@ -37,23 +37,24 @@ loop:
 	jal		input
 	move	$t5, $v0		# coordinate of y2
 
-    jal		area			# compute area
-	add		$s0, $s0, $t2	# increment area
+    jal area                # compute area
+	add.s	$f6, $f6, $f1	# increment area
 
 	beq		$t1, $t0, print	# end loop
 
-	move	$t2, $t4		# update x1
-	move	$t3, $t5		# update x2
+	mov.s	$f1, $f3		# update x1
+	mov.s	$f2, $f4		# update x2
 	j		loop			# jump to loop
 
 
 # area function
 area:
-	sub		$t2, $t4, $t2	# compute x2-x1
-	add		$t3, $t3, $t5	# compute y1+y2
-	mul		$t2, $t2, $t3	# compute product
+    sub.s	$f1, $f3, $f1	# compute x2-x1
+	add.s	$f2, $f4, $f2	# compute y1+y2
+	mul.s	$f2, $f2, $f5	# compute (y1+y2)/2
+	mul.s	$f1, $f1, $f2	# compute area of trapezium
 
-	jr $ra
+    jr $ra
 
 
 # function to take a float input
@@ -140,6 +141,10 @@ max:
 # lower limit
 min:
 	.word	-1024		# @TODO: find the actual lower bound
+
+# zero float
+zero:
+	.float	0.0
 
 # 0.5 float
 point5:
