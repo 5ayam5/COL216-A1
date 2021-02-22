@@ -88,7 +88,7 @@ outOfBounds:
 # only one point has area zero
 nIs1:
 	li		$v0, 2			# print 0 as $f12 is initialised to 0
-	l.s		$f12, zero		# load 0 just to be sure
+	l.s		$f12, Zero		# load 0 just to be sure
 	syscall
 	jal		exit
 
@@ -143,6 +143,10 @@ max:
 # lower limit
 min:
 	.word	-16384
+
+# zero float
+Zero:
+	.float 0.0
 
 # 0.5 float
 point5:
