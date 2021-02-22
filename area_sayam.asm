@@ -8,36 +8,37 @@
 
 # setting and loading initial values along with handling base case
 main:
-	lw		$s7, max		# load the max permitted value of x, y
-	lw		$s6, min		# load the min permitted value of x, y
+	l.s		$f11, max		# load the max permitted value of x, y
+	l.s		$f10, min		# load the min permitted value of x, y
 
 	li		$v0, 5			# load_int
 	syscall
 
 	move	$t0, $v0		# n: number of coordinates
-    beq		$t0, 1, nIs1	# handle corner case
 	blt		$t0, 1, nLess1	# handle corner case (n<1)
 
 	li		$t1, 1			# counter of points
 	jal		input
-	move	$t2, $v0		# coordinate of x1
+	mov.s	$f1, $f0		# coordinate of x1
 	jal		input
 	mov.s	$f2, $f0		# coordinate of y1
+
+	beq		$t0, 1, nIs1	# handle corner case
 
 	l.s		$f6, zero		# the area
 	l.s		$f5, point5		# load 0.5
 
 
-# taking n coordinates as input and calculating are using a loop
+# taking n coordinates as input and calculating area using a loop
 loop:
 	jal		checkBounds		# check the bounds
 	addi	$t1, $t1, 1		# increment the counter
 	jal		input
-	move	$t4, $v0		# coordinate of x2
+	mov.s	$f3, $f0		# coordinate of x2
 	jal		input
-	move	$t5, $v0		# coordinate of y2
+	mov.s	$f4, $f0		# coordinate of y2
 
-    jal area                # compute area
+	jal		area			# compute area
 	add.s	$f6, $f6, $f1	# increment area
 
 	beq		$t1, $t0, print	# end loop
@@ -49,17 +50,17 @@ loop:
 
 # area function
 area:
-    sub.s	$f1, $f3, $f1	# compute x2-x1
+	sub.s	$f1, $f3, $f1	# compute x2-x1
 	add.s	$f2, $f4, $f2	# compute y1+y2
 	mul.s	$f2, $f2, $f5	# compute (y1+y2)/2
 	mul.s	$f1, $f1, $f2	# compute area of trapezium
 
-    jr $ra
+	jr		$ra
 
 
 # function to take a float input
 input:
-	li		$v0, 5			# read_int
+	li		$v0, 6			# read_float
 	syscall					# takes input and stores in v0
 	jr		$ra				# returns function and jumps to address stored in $ra
 
@@ -72,11 +73,15 @@ output:
 # function to check if the input value is in range
 checkBounds:
 	# x coordinate out of bounds
-	bgt		$t2, $s7, outOfBounds
-	blt		$t2, $s6, outOfBounds
+	c.lt.s	$f11, $f1
+	bc1t	outOfBounds
+	c.lt.s	$f1, $f10
+	bc1t	outOfBounds
 	# y coordinate out of bounds
-	bgt		$t3, $s7, outOfBounds
-	blt		$t3, $s6, outOfBounds
+	c.lt.s	$f11, $f2
+	bc1t	outOfBounds
+	c.lt.s	$f2, $f10
+	bc1t	outOfBounds
 	# all okay, go back
 	jr		$ra
 
@@ -84,35 +89,28 @@ checkBounds:
 outOfBounds:
 	la		$a0, ooB		# load ooB message
 	jal		output
-	jal		exit
+	j		exit
 
 # only one point has area zero
 nIs1:
 	li		$v0, 2			# print 0 as $f12 is initialised to 0
 	l.s		$f12, zero		# load 0 just to be sure
 	syscall
-	jal		exit
+	j		exit
 
 # n is less than 1
 nLess1:
 	la		$a0, errN		# load error message
 	jal		output
-	jal		exit
+	j		exit
 
 # function to print float value
 print:
-	div		$s0, $s5		# divide by 2 to get area
-	mfhi	$t1				# the remainder
-	mtc1	$t1, $f11
-	cvt.s.w	$f11, $f11
-	mul.s	$f11, $f11, $f5
-	mflo	$t2				# quotient
-	mtc1	$t2, $f12
-	cvt.s.w	$f12, $f12
-	add.s	$f12, $f12, $f11
+	mov.s	$f12, $f6		# the value
 	li		$v0, 2			# print_float
 	syscall
 	la		$a0, lf
+	jal		output
 	j		exit
 
 # function to exit
@@ -136,11 +134,11 @@ lf:
 
 # upper limit
 max:
-	.word	1023		# @TODO: find the actual upper bound
+	.float	1023.0		# @TODO: find the actual upper bound
 
 # lower limit
 min:
-	.word	-1024		# @TODO: find the actual lower bound
+	.float	-1024.0		# @TODO: find the actual lower bound
 
 # zero float
 zero:
