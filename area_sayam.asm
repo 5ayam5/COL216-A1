@@ -53,7 +53,7 @@ area:
 	add		$t3, $t3, $t5	# compute y1+y2
 	mul		$t2, $t2, $t3	# compute product
 
-	jr $ra
+	jr		$ra
 
 
 # function to take a float input
@@ -101,17 +101,18 @@ nLess1:
 # function to print float value
 print:
 	div		$s0, $s5		# divide by 2 to get area
-	mfhi	$t1				# the remainder
-	mtc1	$t1, $f11
+	mfhi	$s1				# the remainder
+	mtc1	$s1, $f11
 	cvt.s.w	$f11, $f11
 	mul.s	$f11, $f11, $f5
-	mflo	$t2				# quotient
-	mtc1	$t2, $f12
+	mflo	$s2				# quotient
+	mtc1	$s2, $f12
 	cvt.s.w	$f12, $f12
 	add.s	$f12, $f12, $f11
 	li		$v0, 2			# print_float
 	syscall
 	la		$a0, lf
+	jal		output
 	j		exit
 
 # function to exit
@@ -119,6 +120,8 @@ exit:
 	li		$v0, 10
 	syscall
 
+
+# data stored
 	.data
 
 # n<1 error message
@@ -135,11 +138,11 @@ lf:
 
 # upper limit
 max:
-	.word	1023		# @TODO: find the actual upper bound
+	.word	16383
 
 # lower limit
 min:
-	.word	-1024		# @TODO: find the actual lower bound
+	.word	-16384
 
 # 0.5 float
 point5:
