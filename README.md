@@ -1,6 +1,6 @@
 # COL216-A1
-## Mallika Prabhakar 2019CS50440
-## Sayam Sethi       2019CS10399
+### Mallika Prabhakar 2019CS50440
+### Sayam Sethi       2019CS10399
 
 # Folder contents:
 1. area.asm
