@@ -6,8 +6,8 @@
 0. Assignment 1 statement.pdf
 1. area.asm
 2. README.md
-3. Assignment 1 writeup
-4. testing
+3. Assignment 1 writeup.pdf
+4. testing.pdf
 5. testGen.py
 6. test1.txt
 7. test2.txt
