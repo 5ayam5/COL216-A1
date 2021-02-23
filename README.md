@@ -3,6 +3,7 @@
 ### Sayam Sethi       2019CS10399
 
 # Folder contents:
+0. Assignment 1 statement.pdf
 1. area.asm
 2. README.md
 3. Assignment 1 writeup
